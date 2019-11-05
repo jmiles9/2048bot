@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -8,15 +10,21 @@ import java.util.Random;
  * Should pop up a window that the user can control with key presses. (need to
  * be able to change this to neural net input later.... )
  */
-public class Game2048 {
+public class Game2048 implements KeyListener {
 
     private static final int DEFAULT_WIDTH = 4;
     private static final int GAP = 2; //gap between rows/cols
+    private static final int LEFT = 37;
+    private static final int UP = 38;
+    private static final int RIGHT = 39;
+    private static final int DOWN = 40;
 
     //private int gridWidth;  do we need this????
     private int currentScore;
     private int gridWidth;
     private ArrayList<ArrayList<Cell>> cellGrid;
+
+    private GamePanel display;
 
     /**
      * Initialises a game with a customised grid size
@@ -63,11 +71,12 @@ public class Game2048 {
         }
 
 
-        GamePanel display = new GamePanel(gridWidth);
+        display = new GamePanel(gridWidth);
 
         JFrame f = new JFrame();
        // f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.add(display);
+        f.addKeyListener(this);
         f.setVisible(true);
         f.setSize(800, 1000);
     }
@@ -75,6 +84,61 @@ public class Game2048 {
 
     public Game2048(){
         this(DEFAULT_WIDTH);
+    }
+
+    /**
+     *  takes the direction to move the cells, and creates a new cellgrid with all the cells shifted over
+     *  in the designated direction. if two cells have the same value and collide, they should combine
+     * @param direction the direction in which to move the cells. input should be one of LEFT, RIGHT, DOWN, UP.
+     *                  these are defined above to be equal to the value of their respective keyboard arrow codes.
+     */
+    private void handleInput(int direction){
+        System.out.println("handling input");
+        //go thru row (col) and move one by one. check next one over to see if same val, if yes, combine?
+        //go thru, compare with next and swap if previous is empty. val same ==> combine (do later)
+        //placeholder?? increment when filled??
+        //after, add new tile. take num unfilled cells and get random num then place tile by counting that num?
+
+        //TODO: this only shifts them left. change it so it does all directions
+        for(int row = 0; row < cellGrid.size(); row++){
+            int i = 0;
+            int n = 1;
+            while(n < cellGrid.size()){
+                Cell nextCell = cellGrid.get(row).get(n);
+                if(nextCell.filled){
+                    Cell currCell = cellGrid.get(row).get(i);
+                    if(!currCell.filled){
+                        //swap cells index i
+                        cellGrid.get(row).set(n, new Cell()); //set farther index cell to empty
+                        cellGrid.get(row).set(i, nextCell);
+                        n++;
+                    } else {
+                        //if the comparison cell is not empty, check if it is the same value.
+                        // if yes, combine. if no, increase i and DO NOT increase n
+                        if(currCell.value == nextCell.value){
+                            cellGrid.get(row).get(i).value *= 2;
+                            cellGrid.get(row).set(n, new Cell());
+                            n++;
+                        } else{
+                            i++;
+                            if(n == i) n++;
+                        }
+                    }
+                } else n++;
+            }
+        }
+        TESTprintgrid();
+
+        display.updateGamePanel();
+    }
+
+    public void TESTprintgrid(){
+        for(int row = 0; row < cellGrid.size(); row++){
+            for(int col = 0; col < cellGrid.get(row).size(); col++){
+                System.out.print(cellGrid.get(row).get(col).value + "  ");
+            }
+            System.out.println();
+        }
     }
 
     public ArrayList<ArrayList<Integer>> getValueGrid(){
@@ -134,24 +198,59 @@ public class Game2048 {
             this.gridWid = gridW;
             cells = new ArrayList<>();
 
+            this.updateGamePanel();
+        }
+
+        private void updateGamePanel(){
+            System.out.println("updating game panel");
+            //remove all the cells and remake with new cell array
+            this.removeAll();
+            cells.clear();
+
             //make a panel with a grid of boxes
             JPanel gameGrid = new JPanel(new GridLayout(gridWid, gridWid, GAP, GAP));
             this.add(gameGrid);
 
             //add cells, save cell objects in array so we can modify them later
-            for(int col = 0; col < gridWid; col++){
-                for(int row = 0; row < gridWid; row++){
-                    JPanel cell = new JPanel();
-                    cell.setBackground(DEFAULT_COLOUR);
-                    gameGrid.add(cell);
-                    cells.add(cell);
+            for(int row = 0; row < gridWid; row++) {
+                for (int col = 0; col < gridWid; col++) {
+                    JPanel cellPanel = new JPanel(new GridBagLayout());
+                    Cell cell = cellGrid.get(row).get(col);
+                    if (cell.filled) {
+                        cellPanel.setBackground(FIRST_COLOUR);
+                        JLabel l = new JLabel(String.valueOf(cell.value));
+                        l.setFont(new Font("Arial", 1, 40));
+                        cellPanel.add(l);
+                    } else {
+                        cellPanel.setBackground(DEFAULT_COLOUR);
+                        cellPanel.add(new JLabel(" "));
+                    }
+                    gameGrid.add(cellPanel);
+                    cells.add(cellPanel);
                 }
             }
         }
 
-
-
     }
+
+    //KEY LISTENER INTERFACE METHODS///////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * When a key is pressed, if the key is one of the arrows, it should save the value and call the update function
+     * name tbd.
+     * @param e the key event. not really sure how this works but it does
+     */
+    public void keyPressed(KeyEvent e){
+        System.out.println("key pressed");
+        int keyCode = e.getKeyCode();
+
+        if (keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT)
+            handleInput(keyCode);
+    }
+
+    //dont care about these guys but they have to be here
+    public void keyReleased(KeyEvent e){}
+    public void keyTyped(KeyEvent e){}
 
     public static void main (String[]args){
         //game time!

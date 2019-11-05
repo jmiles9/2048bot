@@ -139,10 +139,8 @@ public class KeyPadPanel extends JPanel {
                     }
                 }
             });
-            KeyPadPanel.this.getInputMap().put(KeyStroke.getKeyStroke(
-                    KeyEvent.VK_0 + number, 0), this.getText());
-            KeyPadPanel.this.getInputMap().put(KeyStroke.getKeyStroke(
-                    KeyEvent.VK_NUMPAD0 + number, 0), this.getText());
+            KeyPadPanel.this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + number, 0), this.getText());
+            KeyPadPanel.this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0 + number, 0), this.getText());
             KeyPadPanel.this.getActionMap().put(this.getText(), new Click(this));
         }
     }
