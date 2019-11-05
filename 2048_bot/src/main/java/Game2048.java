@@ -93,40 +93,75 @@ public class Game2048 implements KeyListener {
      *                  these are defined above to be equal to the value of their respective keyboard arrow codes.
      */
     private void handleInput(int direction){
-        System.out.println("handling input");
+       // System.out.println("handling input");
         //go thru row (col) and move one by one. check next one over to see if same val, if yes, combine?
         //go thru, compare with next and swap if previous is empty. val same ==> combine (do later)
         //placeholder?? increment when filled??
         //after, add new tile. take num unfilled cells and get random num then place tile by counting that num?
 
         //TODO: this only shifts them left. change it so it does all directions
-        for(int row = 0; row < cellGrid.size(); row++){
-            int i = 0;
-            int n = 1;
-            while(n < cellGrid.size()){
-                Cell nextCell = cellGrid.get(row).get(n);
-                if(nextCell.filled){
-                    Cell currCell = cellGrid.get(row).get(i);
-                    if(!currCell.filled){
-                        //swap cells index i
-                        cellGrid.get(row).set(n, new Cell()); //set farther index cell to empty
-                        cellGrid.get(row).set(i, nextCell);
-                        n++;
-                    } else {
-                        //if the comparison cell is not empty, check if it is the same value.
-                        // if yes, combine. if no, increase i and DO NOT increase n
-                        if(currCell.value == nextCell.value){
-                            cellGrid.get(row).get(i).value *= 2;
-                            cellGrid.get(row).set(n, new Cell());
+        if(direction == LEFT) {
+            System.out.println("moving left");
+            for (int row = 0; row < cellGrid.size(); row++) {
+                int i = 0;
+                int n = 1;
+                while (n < cellGrid.size()) {
+                    Cell nextCell = cellGrid.get(row).get(n);
+                    if (nextCell.filled) {
+                        Cell currCell = cellGrid.get(row).get(i);
+                        if (!currCell.filled) {
+                            //swap cells index i
+                            cellGrid.get(row).set(n, new Cell()); //set farther index cell to empty
+                            cellGrid.get(row).set(i, nextCell);
                             n++;
-                        } else{
-                            i++;
-                            if(n == i) n++;
+                        } else {
+                            //if the comparison cell is not empty, check if it is the same value.
+                            // if yes, combine. if no, increase i and DO NOT increase n
+                            if (currCell.value == nextCell.value) {
+                                cellGrid.get(row).get(i).value *= 2;
+                                cellGrid.get(row).set(n, new Cell());
+                                n++;
+                            } else {
+                                i++;
+                                if (n == i) n++;
+                            }
                         }
-                    }
-                } else n++;
+                    } else n++;
+                }
             }
         }
+        //SHIFT RIGHT///////////////
+        else if(direction == RIGHT) {
+            System.out.println("moving right");
+            for (int row = 0; row < cellGrid.size(); row++) {
+                int i = cellGrid.get(row).size() - 1;
+                int n = i - 1;
+                while (n >= 0) {
+                    Cell nextCell = cellGrid.get(row).get(n);
+                    if (nextCell.filled) {
+                        Cell currCell = cellGrid.get(row).get(i);
+                        if (!currCell.filled) {
+                            //swap cells index i
+                            cellGrid.get(row).set(n, new Cell()); //set farther index cell to empty
+                            cellGrid.get(row).set(i, nextCell);
+                            n--;
+                        } else {
+                            //if the comparison cell is not empty, check if it is the same value.
+                            // if yes, combine. if no, increase i and DO NOT increase n
+                            if (currCell.value == nextCell.value) {
+                                cellGrid.get(row).get(i).value *= 2;
+                                cellGrid.get(row).set(n, new Cell());
+                                n--;
+                            } else {
+                                i--;
+                                if (n == i) n--;
+                            }
+                        }
+                    } else n--;
+                }
+            }
+        }
+
         TESTprintgrid();
 
         display.updateGamePanel();
@@ -229,6 +264,7 @@ public class Game2048 implements KeyListener {
                     cells.add(cellPanel);
                 }
             }
+            this.validate();
         }
 
     }
