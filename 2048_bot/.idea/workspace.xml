@@ -22,16 +22,17 @@
       <file leaf-file-name="Game2048.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/Game2048.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="865">
-              <caret line="159" column="30" lean-forward="false" selection-start-line="159" selection-start-column="30" selection-end-line="159" selection-end-column="30" />
+            <state relative-caret-position="768">
+              <caret line="170" column="62" lean-forward="false" selection-start-line="170" selection-start-column="62" selection-end-line="170" selection-end-column="62" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#2704#2705#0" expanded="true" />
-                <element signature="e#2739#2740#0" expanded="true" />
+                <element signature="e#2806#2807#0" expanded="true" />
+                <element signature="e#2841#2842#0" expanded="true" />
+                <element signature="method#shiftRight#0;class#Game2048#0" expanded="false" />
+                <element signature="method#shiftUp#0;class#Game2048#0" expanded="false" />
+                <element signature="method#shiftDown#0;class#Game2048#0" expanded="false" />
                 <element signature="method#TESTprintgrid#0;class#Game2048#0" expanded="false" />
                 <element signature="method#getValueGrid#0;class#Game2048#0" expanded="false" />
-                <element signature="class#Cell#0;class#Game2048#0" expanded="false" />
-                <element signature="class#GamePanel#0;class#Game2048#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -769,16 +770,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/Game2048.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="865">
-          <caret line="159" column="30" lean-forward="false" selection-start-line="159" selection-start-column="30" selection-end-line="159" selection-end-column="30" />
+        <state relative-caret-position="768">
+          <caret line="170" column="62" lean-forward="false" selection-start-line="170" selection-start-column="62" selection-end-line="170" selection-end-column="62" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2704#2705#0" expanded="true" />
-            <element signature="e#2739#2740#0" expanded="true" />
+            <element signature="e#2806#2807#0" expanded="true" />
+            <element signature="e#2841#2842#0" expanded="true" />
+            <element signature="method#shiftRight#0;class#Game2048#0" expanded="false" />
+            <element signature="method#shiftUp#0;class#Game2048#0" expanded="false" />
+            <element signature="method#shiftDown#0;class#Game2048#0" expanded="false" />
             <element signature="method#TESTprintgrid#0;class#Game2048#0" expanded="false" />
             <element signature="method#getValueGrid#0;class#Game2048#0" expanded="false" />
-            <element signature="class#Cell#0;class#Game2048#0" expanded="false" />
-            <element signature="class#GamePanel#0;class#Game2048#0" expanded="false" />
           </folding>
         </state>
       </provider>

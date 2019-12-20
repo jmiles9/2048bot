@@ -23,6 +23,7 @@ public class Game2048 implements KeyListener {
     private int currentScore;
     private int gridWidth;
     private ArrayList<ArrayList<Cell>> cellGrid;
+    private int numEmptyCells;
 
     private GamePanel display;
 
@@ -34,6 +35,7 @@ public class Game2048 implements KeyListener {
         currentScore = -1;
         this.gridWidth = gridW;
         this.cellGrid = new ArrayList<>();
+        this.numEmptyCells = gridW*gridW;
 
         //initialise grid of empty cells
         for(int row = 0; row < gridWidth; row++){
@@ -68,6 +70,7 @@ public class Game2048 implements KeyListener {
 
             cellGrid.get(row).get(col).filled = true;
             cellGrid.get(row).get(col).value = num;
+            numEmptyCells--;
         }
 
 
@@ -99,72 +102,171 @@ public class Game2048 implements KeyListener {
         //placeholder?? increment when filled??
         //after, add new tile. take num unfilled cells and get random num then place tile by counting that num?
 
-        //TODO: this only shifts them left. change it so it does all directions
-        if(direction == LEFT) {
-            System.out.println("moving left");
-            for (int row = 0; row < cellGrid.size(); row++) {
-                int i = 0;
-                int n = 1;
-                while (n < cellGrid.size()) {
-                    Cell nextCell = cellGrid.get(row).get(n);
-                    if (nextCell.filled) {
-                        Cell currCell = cellGrid.get(row).get(i);
-                        if (!currCell.filled) {
-                            //swap cells index i
-                            cellGrid.get(row).set(n, new Cell()); //set farther index cell to empty
-                            cellGrid.get(row).set(i, nextCell);
-                            n++;
-                        } else {
-                            //if the comparison cell is not empty, check if it is the same value.
-                            // if yes, combine. if no, increase i and DO NOT increase n
-                            if (currCell.value == nextCell.value) {
-                                cellGrid.get(row).get(i).value *= 2;
-                                cellGrid.get(row).set(n, new Cell());
-                                n++;
-                            } else {
-                                i++;
-                                if (n == i) n++;
-                            }
-                        }
-                    } else n++;
-                }
-            }
+        //shift all to one side
+        if(direction == LEFT) shiftLeft();
+        if(direction == RIGHT) shiftRight();
+        if(direction == DOWN) shiftDown();
+        if(direction == UP) shiftUp();
+
+        if(numEmptyCells == 0){
+            System.out.println("GAME OVER");
+            //close game panel?
         }
-        //SHIFT RIGHT///////////////
-        else if(direction == RIGHT) {
-            System.out.println("moving right");
-            for (int row = 0; row < cellGrid.size(); row++) {
-                int i = cellGrid.get(row).size() - 1;
-                int n = i - 1;
-                while (n >= 0) {
-                    Cell nextCell = cellGrid.get(row).get(n);
-                    if (nextCell.filled) {
-                        Cell currCell = cellGrid.get(row).get(i);
-                        if (!currCell.filled) {
-                            //swap cells index i
-                            cellGrid.get(row).set(n, new Cell()); //set farther index cell to empty
-                            cellGrid.get(row).set(i, nextCell);
-                            n--;
-                        } else {
-                            //if the comparison cell is not empty, check if it is the same value.
-                            // if yes, combine. if no, increase i and DO NOT increase n
-                            if (currCell.value == nextCell.value) {
-                                cellGrid.get(row).get(i).value *= 2;
-                                cellGrid.get(row).set(n, new Cell());
-                                n--;
-                            } else {
-                                i--;
-                                if (n == i) n--;
-                            }
-                        }
-                    } else n--;
+
+        //add one new square, value either 2 or 4
+        Random rd = new Random();
+        int num = rd.nextInt(2);
+        if(num == 0) num = 2;
+        if(num == 1) num = 4;
+
+        //choose random location out of empty cells
+        int loc = rd.nextInt(numEmptyCells);
+        //System.out.println("num empty cells: " + numEmptyCells);
+        //System.out.println("location: " + loc);
+
+        //insert new cell
+        for(int row = 0; row < cellGrid.size() && loc >= 0; row++){
+            for(int col = 0; col < cellGrid.size() && loc >= 0; col++){
+                if(!cellGrid.get(row).get(col).filled){
+                    if(loc == 0){
+                        cellGrid.get(row).set(col, new Cell(num));
+                        numEmptyCells --;
+                    }
+                    loc--;
                 }
             }
         }
 
-        TESTprintgrid();
+        //TESTprintgrid();
 
         display.updateGamePanel();
+    }
+
+    /**
+     * shifting functions, just down here so they can be minimised and handleInput isn't huge
+     */
+    private void shiftLeft(){
+        boolean hasChanged = false;
+        for (int row = 0; row < cellGrid.size(); row++) {
+            int i = 0;
+            int n = 1;
+            while (n < cellGrid.size()) {
+                Cell nextCell = cellGrid.get(row).get(n);
+                if (nextCell.filled) {
+                    Cell currCell = cellGrid.get(row).get(i);
+                    if (!currCell.filled) {
+                        //swap cells index i
+                        cellGrid.get(row).set(n, new Cell()); //set farther index cell to empty
+                        cellGrid.get(row).set(i, nextCell);
+                        n++;
+                        hasChanged = true; //TODO put this in other shift fns
+                    } else {
+                        //if the comparison cell is not empty, check if it is the same value.
+                        // if yes, combine. if no, increase i and DO NOT increase n
+                        if (currCell.value == nextCell.value) {
+                            cellGrid.get(row).get(i).value *= 2;
+                            cellGrid.get(row).set(n, new Cell());
+                            numEmptyCells++;
+                            n++;
+                            hasChanged = true; //TODO this too
+                        } else {
+                            i++;
+                            if (n == i) n++;
+                        }
+                    }
+                } else n++;
+            }
+        }
+    }
+    private void shiftRight(){
+        for (int row = 0; row < cellGrid.size(); row++) {
+            int i = cellGrid.get(row).size() - 1;
+            int n = i - 1;
+            while (n >= 0) {
+                Cell nextCell = cellGrid.get(row).get(n);
+                if (nextCell.filled) {
+                    Cell currCell = cellGrid.get(row).get(i);
+                    if (!currCell.filled) {
+                        //swap cells index i
+                        cellGrid.get(row).set(n, new Cell()); //set farther index cell to empty
+                        cellGrid.get(row).set(i, nextCell);
+                        n--;
+                    } else {
+                        //if the comparison cell is not empty, check if it is the same value.
+                        // if yes, combine. if no, increase i and DO NOT increase n
+                        if (currCell.value == nextCell.value) {
+                            cellGrid.get(row).get(i).value *= 2;
+                            cellGrid.get(row).set(n, new Cell());
+                            numEmptyCells++;
+                            n--;
+                        } else {
+                            i--;
+                            if (n == i) n--;
+                        }
+                    }
+                } else n--;
+            }
+        }
+    }
+    private void shiftUp(){
+        for (int col = 0; col < cellGrid.size(); col++) {
+            int i = 0;
+            int n = 1;
+            while (n < cellGrid.size()) {
+                Cell nextCell = cellGrid.get(n).get(col);
+                if (nextCell.filled) {
+                    Cell currCell = cellGrid.get(i).get(col);
+                    if (!currCell.filled) {
+                        //swap cells index i
+                        cellGrid.get(n).set(col, new Cell()); //set farther index cell to empty
+                        cellGrid.get(i).set(col, nextCell);
+                        n++;
+                    } else {
+                        //if the comparison cell is not empty, check if it is the same value.
+                        // if yes, combine. if no, increase i and DO NOT increase n
+                        if (currCell.value == nextCell.value) {
+                            cellGrid.get(i).get(col).value *= 2;
+                            cellGrid.get(n).set(col, new Cell());
+                            numEmptyCells++;
+                            n++;
+                        } else {
+                            i++;
+                            if (n == i) n++;
+                        }
+                    }
+                } else n++;
+            }
+        }
+    }
+    private void shiftDown(){
+        for (int col = 0; col < cellGrid.size(); col++) {
+            int i = cellGrid.get(col).size() - 1;
+            int n = i - 1;
+            while (n >= 0) {
+                Cell nextCell = cellGrid.get(n).get(col);
+                if (nextCell.filled) {
+                    Cell currCell = cellGrid.get(i).get(col);
+                    if (!currCell.filled) {
+                        //swap cells index i
+                        cellGrid.get(n).set(col, new Cell()); //set farther index cell to empty
+                        cellGrid.get(i).set(col, nextCell);
+                        n--;
+                    } else {
+                        //if the comparison cell is not empty, check if it is the same value.
+                        // if yes, combine. if no, increase i and DO NOT increase n
+                        if (currCell.value == nextCell.value) {
+                            cellGrid.get(i).get(col).value *= 2;
+                            cellGrid.get(n).set(col, new Cell());
+                            numEmptyCells++;
+                            n--;
+                        } else {
+                            i--;
+                            if (n == i) n--;
+                        }
+                    }
+                } else n--;
+            }
+        }
     }
 
     public void TESTprintgrid(){
@@ -202,9 +304,9 @@ public class Game2048 implements KeyListener {
             filled = false;
         }
 
-        private Cell(int val, boolean fill){
+        private Cell(int val){
             value = val;
-            filled = fill;
+            filled = true;
         }
     }
 
